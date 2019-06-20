@@ -23,7 +23,7 @@ class Player1 {
     ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
   }
   moveRigth(){
-    if(this.x < canvas.width - this.width - 80){ 
+    if(this.x < canvas.width - this.width){ 
     return this.x+=10
     }
   }
@@ -34,24 +34,24 @@ class Player1 {
     }
     isTouching(ball){
       return(
-      this.x < ball.x + ball.width &&
+      this.x < ball.x + ball.rnd &&
       this.x + this.width > ball.x &&
-      this.y < ball.y + ball.height &&
+      this.y < ball.y + ball.rnd &&
       this.y + this.height > ball.y
       )
     }
   }
   class Ball{
-    constructor (x,y){
+    constructor (x,y, rnd ){
       this.x =x
       this.y =y
-      this.width=25
-      this.height=28
-      
+      this.width= 30
+      this.height= 25
+      this.rnd = Math.floor(Math.random() * (this.width + 50 ))      
     }
     draw(){
       ctx.beginPath()
-      ctx.arc(this.x, this.y, 35, 0, Math.PI * 2)
+      ctx.arc(this.x, this.y, this.rnd, 0, Math.PI * 2)
       ctx.fillStyle='white'
       ctx.fill()
       //ctx.stroke()
@@ -72,7 +72,7 @@ function update (){
 }
 
 function generateBalls(){
-  let rndX = Math.random() * canvas.width + 80
+  let rndX = Math.random() * canvas.width + 60   //aqui define la posicion random de x dentro del canvas donde sale la pelota
   if (rndX < canvas.width - 150){
     balls.push(new Ball(rndX,0))
   }
@@ -99,7 +99,18 @@ function checkCollition() {
   })
 }
 
+function startGame() {
+  if (interval)return
+  interval = setInterval(update, 1000/240)
+}
 
+
+window.onload = function() {
+  document.getElementById("start-button").onclick = function() {
+    startGame();
+  };
+  
+};
 
 //listeners
 addEventListener('keydown', (e) => {
@@ -109,18 +120,3 @@ addEventListener('keydown', (e) => {
     player1.moveLeft()
   }
 })
-
-
-window.onload = function() {
-  document.getElementById("start-button").onclick = function() {
-    startGame();
-  };
-
-
-  function startGame() {
-    if (interval)return
-    interval = setInterval(update, 1000/240)
-  }
-
-  
-};
