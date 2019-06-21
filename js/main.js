@@ -3,78 +3,77 @@ const ctx = canvas.getContext('2d')
 
 //Variables
 let balls = []
-let radius = Math.floor(Math.random() * (canvas.width - 300))
-let ballX = Math.floor(Math.random() * canvas.width)
-let ballY = 0
+//let radius = Math.floor(Math.random() * (canvas.width - 300))
+//let ballX = Math.floor(Math.random() * canvas.width)
+//let ballY = 0
 let interval 
 let frames = 0
 const images = {
   monito: "./images/stickman.png" //cambiar esto por una arreglo de imagenes
 }
 //Variables para fisica de la pelota
-let vx = 5.0
-let vy = (Math.random() * -15) + -5
-let gravity = 0.9
-let bounce = 0.7
-let xFriction = 0.1
+let vel = 5
 
 class Ball {
-  constructor (x, y, radius, vx, vy, gravity, bounce) {
-    this.x = x,
-    this.y = y,
-    this.radius = radius,
-    this.status = 0;
+  constructor (x, y, radius, velo) {
+    this.x = x
+    this.y = y
+    this.radius = radius
     this.color = 'red'
-    this.vx = vx
-    this.vy = vy
-    this.gravity = gravity 
-    this.bounce = bounce 
-  }
-  draw(){
-    ctx.beginPath()
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
-    ctx.fillStyle = this.color
-    ctx.fill()
-    ctx.closePath()
-    //this.y+=vy
-    this.ballMovement()
-  }
-  ballMovement(){
-    this.x += vx;
-    this.y += vy;
-    vy += gravity;
+    this.isMoving = true
+    this.toUp = false
+    this.toLeft = false 
     
-    //If either wall is hit, change direction on x axis
-    if (this.x + this.radius > canvas.width || this.x - this.radius < 0){
-        vx *= -1;
-    } 
-    
-      // Ball hits the floor
-    if (this.y + this.radius > canvas.height){// ||
-      
-        // Re-positioning on the base
-       this.y = canvas.height - this.radius;
-        //bounce the ball
-          vy *= -bounce;
-        //do this otherwise, ball never stops bouncing
-          if(vy<0 && vy>-2.1)
-                     vy=0;
-        //do this otherwise ball never stops on xaxis
-         if(Math.abs(vx)<1.1)
-             vx=0;
-   
-         this.xF();
-         
-        }
+    this.getDistance = function(ball) {
+    let xD = this.x-ball.x
+    let yD = this.y-ball.y 
+    return Math.sqrt(Mat.pw(xD, 2) + Math.pow(yD, 2))
     }
 
-    xF(){
-      if(vx>0)
-          vx = vx - xFriction;
-      if(vx<0)
-          vx = vx + xFriction;
-        }
+    this.isTouching = function (ball) {
+      return this.getDistance(ball) < this.radius + ball.radius
+    }
+    
+    this.move = function(){
+      if(!this.isMoving) return;
+      var rX = this.x + this.radius;
+      var rY = this.y + this.radius;
+      //arriba y abajo
+      if(this.toUp){
+        this.y-=velo ? velo : vel;
+      }else{
+        this.y+=velo ? velo : vel;
+      }
+      //izq derecha
+      if(this.toLeft){
+        this.x-=velo ? velo: vel;
+      }else{
+        this.x+=velo ? velo : vel;
+      }
+      //techo y pis
+      if(rY > canvas.height){
+        this.toUp = true;
+      }else if(rY < 0 + this.radius * 2 ){
+        this.toUp = false;
+      }
+      //paredes
+      if(rX > canvas.width){
+        this.toLeft = true;
+      }else if(rX < 0 + this.radius * 2){
+        this.toLeft = false;
+      }
+    }
 
+    this.draw = function(){
+      this.move();
+      ctx.beginPath();
+      ctx.arc(this.x,this.y,this.radius,0,Math.PI*2);
+      ctx.fillStyle = this.color;
+      ctx.fill();
+      ctx.closePath();
+      
+    }
+   }
   }
 
 
@@ -113,8 +112,8 @@ class Player1 {
 
 
 //Instancias
-const ball = new Ball (ballX, ballY, radius)
-console.log(balls)
+//const ball = new Ball (ballX, ballY, radius)
+//console.log(balls)
 const player1 = new Player1(235, canvas.height - 60, images.monito)
 
 //Funciones
@@ -133,11 +132,12 @@ function startGame() {
 
 function generateBalls(){
   let rndX = Math.random() * canvas.width + 60
+  let rndY = Math.random() * canvas.width + 60
   let radius = Math.floor(Math.random() * (canvas.width - 400))
-  let vy = (Math.random() * -15) + -5
-  console.log(vy)
+  //let vy = (Math.random() * -15) + -5
+  //console.log(vy)
   if (rndX < canvas.width - 150){
-    balls.push(new Ball(rndX, ballY, radius, vx, vy, gravity, bounce))
+    balls.push(new Ball(rndX, rndY, radius))
   }
 
 }
