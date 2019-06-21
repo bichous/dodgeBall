@@ -40,7 +40,7 @@ class Ball {
     this.ballMovement()
   }
   ballMovement(){
-    this.x += this.vx;
+    this.x += vx;
     this.y += vy;
     vy += gravity;
     
@@ -93,12 +93,12 @@ class Player1 {
     }
     moveRigth(){
       if(this.x < canvas.width - this.width){ 
-      return this.x+=10
+      return this.x+=15
       }
     }
     moveLeft(){
         if(this.x > canvas.width -  this.width - 450){ 
-        return this.x-=10
+        return this.x-=15
         }
       }
       isTouching(ball){
