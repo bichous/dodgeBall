@@ -1,5 +1,6 @@
 const canvas = document.querySelector('#background')
 const ctx = canvas.getContext('2d')
+const restart = document.querySelector('#reset-button')
 
 //Variables
 let balls = []
@@ -226,7 +227,10 @@ window.onload = function() {
   document.getElementById("start-button").onclick = function() {
     startGame();
   };
-  
+
+restart.onclick = e => {
+  location.reload()
+}
 };
 
 //listeners
