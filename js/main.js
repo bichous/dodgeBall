@@ -131,14 +131,14 @@ class Player1 {
       this.isRight = true
       this.isLeft = false
       if(this.x < canvas.width - this.width){ 
-      return this.x+=15
+      return this.x+=20
       }
     }
     moveLeft(){
       this.isLeft = true
       this.isRight = false
         if(this.x > canvas.width -  this.width - 450){ 
-          return this.x-=15
+          return this.x-=20
         }
       }
 
@@ -183,12 +183,12 @@ function update (){
 
 function startGame() {
   if (interval)return
-  interval = setInterval(update, 1000/60)
+  interval = setInterval(update, 1000/80)
 }
 
 function generateBalls(){
   let rndX = Math.random() * canvas.width + 60
-  let rndY = Math.random() * canvas.width + 60
+  let rndY = Math.random() * canvas.width - 100
   let radius = Math.floor(Math.random() * (canvas.width - 400))
   //let vy = (Math.random() * -15) + -5
   //console.log(vy)
