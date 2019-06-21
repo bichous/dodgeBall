@@ -8,9 +8,14 @@ let balls = []
 //let ballY = 0
 let interval 
 let frames = 0
-const images = {
-  monito: "./images/stickman.png" //cambiar esto por una arreglo de imagenes
-}
+const images = [
+  ["./images/stickman_run-left_1.png","./images/stickman_run-left_2.png"],
+  "./images/stickman.png",
+  ["./images/stickman_run-right_1.png","./images/stickman_run-right_2.png"]
+    ] //cambiar esto por una arreglo de imagenes
+
+
+
 //Variables para fisica de la pelota
 let vel = 3
 
@@ -91,26 +96,49 @@ class Ball {
 
 
 class Player1 {
-    constructor(x, y, img){
+    constructor(x, y, images){
       this.x = x
       this.y = y
       this.width =50
       this.height = 70
-      this.img = new Image()
-      this.img.src = img
+      this.isRight = false
+      this.isLeft = false 
+      this.imgStand = new Image ()
+      this.imgStand.src = images[1]
+      this.img = this.imgStand
+      this.imgLeft1 = new Image ()
+      this.imgLeft1.src = images[0][0]
+      this.imgLeft2 = new Image ()
+      this.imgLeft2.src = images[0][1]
+      this.imgRight1 = new Image ()
+      this.imgRight1.src = images[2][0]
+      this.imgRigth2 = new Image ()
+      this.imgRigth2.src = images[2][1]
+      //this.img.src = images
       //clearRect(0,0, this.width, this.height)
     }
     draw(){
+      if(this.isLeft){
+        this.img = this.imgLeft1
+      }else if (this.isRight) {
+        this.img = this.imgRight1
+      }else{
+        this.img = this.imgStand
+      }
       ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
     }
     moveRigth(){
+      this.isRight = true
+      this.isLeft = false
       if(this.x < canvas.width - this.width){ 
       return this.x+=15
       }
     }
     moveLeft(){
+      this.isLeft = true
+      this.isRight = false
         if(this.x > canvas.width -  this.width - 450){ 
-        return this.x-=15
+          return this.x-=15
         }
       }
 
@@ -142,20 +170,20 @@ class Player1 {
 //Instancias
 //const ball = new Ball (ballX, ballY, radius)
 //console.log(balls)
-const player1 = new Player1(235, canvas.height - 60, images.monito)
+const player1 = new Player1(235, canvas.height - 60, images)
 
 //Funciones
 function update (){
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   frames++
+  drawBalls()
   player1.draw()
   checkCollition()
-  drawBalls()
 }
 
 function startGame() {
   if (interval)return
-  interval = setInterval(update, 1000/120)
+  interval = setInterval(update, 1000/60)
 }
 
 function generateBalls(){
