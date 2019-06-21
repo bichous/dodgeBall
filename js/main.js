@@ -12,7 +12,7 @@ const images = {
   monito: "./images/stickman.png" //cambiar esto por una arreglo de imagenes
 }
 //Variables para fisica de la pelota
-let vel = 5
+let vel = 3
 
 class Ball {
   constructor (x, y, radius, velo) {
@@ -23,16 +23,17 @@ class Ball {
     this.isMoving = true
     this.toUp = false
     this.toLeft = false 
+    this.bounce = 0
     
     this.getDistance = function(ball) {
     let xD = this.x-ball.x
     let yD = this.y-ball.y 
-    return Math.sqrt(Mat.pw(xD, 2) + Math.pow(yD, 2))
+    return Math.sqrt(Math.pow(xD, 2) + Math.pow(yD, 2))
     }
 
-    this.isTouching = function (ball) {
-      return this.getDistance(ball) < this.radius + ball.radius
-    }
+    //this.isTouching = function (ball) {
+      //return this.getDistance(ball) < this.radius + ball.radius
+    //}
     
     this.move = function(){
       if(!this.isMoving) return;
@@ -52,14 +53,26 @@ class Ball {
       }
       //techo y pis
       if(rY > canvas.height){
+        if(!this.toUp) {
+          this.bounce++
+        } 
         this.toUp = true;
       }else if(rY < 0 + this.radius * 2 ){
+        if (this.toUp){
+          this.bounce++
+        }
         this.toUp = false;
       }
       //paredes
       if(rX > canvas.width){
+        if (!this.toLeft) {
+          this.bounce++
+        }
         this.toLeft = true;
       }else if(rX < 0 + this.radius * 2){
+        if (this.toLeft){
+          this.bounce++
+        }
         this.toLeft = false;
       }
     }
@@ -100,13 +113,28 @@ class Player1 {
         return this.x-=15
         }
       }
+
+      getDistance = function(x, y, ball) {
+        let xD = x-ball.x
+        let yD = y-ball.y 
+        
+         
+        return Math.sqrt(Math.pow(xD, 2) + Math.pow(yD, 2))
+        }
+
       isTouching(ball){
-        return(
-          this.x < ball.x + ball.rnd &&
-          this.x + this.width > ball.x &&
-          this.y < ball.y + ball.rnd &&
-          this.y + this.height > ball.y
+        return (
+        this.getDistance(this.x, this.y, ball) < ball.radius || 
+        this.getDistance(this.x + this.width, this.y, ball) < ball.radius ||
+        this.getDistance(this.x + (this.width/2), this.y, ball) < ball.radius ||
+        this.getDistance(this.x + this.width, this.y + (this.height/2), ball) < ball.radius ||
+        this.getDistance(this.x, this.y + (this.height/2), ball) < ball.radius
         )
+          // this.x < ball.x + ball.radius &&
+          // this.x + this.width > ball.x &&
+          // this.y < ball.y + ball.radius &&
+          // this.y + this.height > ball.y
+        
       }
     }
 
@@ -121,7 +149,7 @@ function update (){
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   frames++
   player1.draw()
-  //checkCollition()
+  checkCollition()
   drawBalls()
 }
 
@@ -143,21 +171,23 @@ function generateBalls(){
 }
 
 function drawBalls(){
-  if(frames % 200 === 0){
+  if(frames % 250 === 0){
     generateBalls()
   }
+  balls = balls.filter(ball => ball.bounce <= 10 )
+
   balls.map(ball=> {
     ball.draw()
   })
 }
 
-// function checkCollition() {
-  // balls.map(ball => {
-    // if (player1.isTouching(ball)) {
-      // gameOver()
-    // }
-  // })
-// }
+function checkCollition() {
+  balls.map(ball => {
+    if (player1.isTouching(ball)) {
+      gameOver()
+    }
+  })
+}
 
 function gameOver() {
   clearInterval(interval)
